@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 
@@ -12,6 +10,10 @@ namespace Com.Augment.ARWorld
     {
 
         #region Private Serializble Fields
+
+        [Tooltip("Max number of players per room. When the room is full, a new room will be created")]
+        [SerializeField]
+        private byte maxPlayersPerRoom = 4;
 
         #endregion
 
@@ -29,7 +31,6 @@ namespace Com.Augment.ARWorld
 
         #region MonoBehaviour Callbacks
 
-
         /// <summary>
         /// MonoBehavior method called on the GameObject by Unity during initialization
         /// </summary>
@@ -42,13 +43,6 @@ namespace Com.Augment.ARWorld
 
         }
 
-
-        void Start()
-        {
-
-            Debug.Log("Started application");
-            Connect();
-        }
 
         #endregion
 
@@ -73,7 +67,7 @@ namespace Com.Augment.ARWorld
         {
             Debug.Log("OnJoinRandomFailed(). No random room available");
 
-            PhotonNetwork.CreateRoom(null, new RoomOptions());
+            PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = maxPlayersPerRoom});
         }
 
         public override void OnJoinedRoom()
@@ -88,8 +82,8 @@ namespace Com.Augment.ARWorld
 
 
         /// <summary>
-        /// Starts the connection processs
-        /// If already connect, the client joins a random room
+        /// Starts the connection processs when the user clicks the play button
+        /// If already connected, the client joins a random room
         /// If not, connect the application instance to the Photon Cloud Network
         /// </summary>
         public void Connect()
