@@ -15,6 +15,15 @@ namespace Com.Augment.ARWorld
         [SerializeField]
         private byte maxPlayersPerRoom = 4;
 
+        [Tooltip("UI Panel that lets the user enter name, connect, and play")]
+        [SerializeField]
+        private GameObject controlPanel;
+
+        [Tooltip("UI Label that informs the user that the connection is in progress")]
+        [SerializeField]
+        private GameObject progressLabel;
+
+
         #endregion
 
 
@@ -43,6 +52,13 @@ namespace Com.Augment.ARWorld
 
         }
 
+        void Start()
+        {
+
+            progressLabel.SetActive(false);
+            controlPanel.SetActive(true);
+        }
+
 
         #endregion
 
@@ -59,6 +75,8 @@ namespace Com.Augment.ARWorld
 
         public override void OnDisconnected(DisconnectCause cause)
         {
+            progressLabel.SetActive(false);
+            controlPanel.SetActive(true);
             Debug.LogWarningFormat("OnDisconnected() was called by PUN with reason {0}", cause);
         }
 
@@ -88,6 +106,10 @@ namespace Com.Augment.ARWorld
         /// </summary>
         public void Connect()
         {
+
+            progressLabel.SetActive(true);
+            controlPanel.SetActive(false);
+
             if (PhotonNetwork.IsConnected)
             {
                 // #Critical, joins random room, if it fails, OnJoinRandomFailed() will return, and we'll create a room
@@ -100,6 +122,8 @@ namespace Com.Augment.ARWorld
                 PhotonNetwork.ConnectUsingSettings();
                 PhotonNetwork.GameVersion = gameVersion;
             }
+
+           
         }
 
         #endregion
