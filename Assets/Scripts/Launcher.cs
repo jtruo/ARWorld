@@ -6,6 +6,9 @@ using Photon.Realtime;
 namespace Com.Augment.ARWorld
 {
 
+    /// <summary>
+    /// Takes care of connecting the user to Photon
+    /// </summary>
     public class Launcher : MonoBehaviourPunCallbacks
     {
 
@@ -33,6 +36,12 @@ namespace Com.Augment.ARWorld
         /// Client's game version number
         /// </summary>
         string gameVersion = "1";
+
+        /// <summary>
+        /// Used to adjust behavior based off of call backs from Photon.
+        /// Typically used for OnConnectedToMaster().
+        /// </summary>
+        bool isConnecting;
 
 
         #endregion
@@ -69,7 +78,14 @@ namespace Com.Augment.ARWorld
         public override void OnConnectedToMaster()
         {
             Debug.Log("OnConnectedToMaster() was called by PUN");
-            PhotonNetwork.JoinRandomRoom();
+
+            if (isConnecting)
+            {
+                PhotonNetwork.JoinRandomRoom();
+                isConnecting = false;
+            }
+
+           
         }
 
 
@@ -91,6 +107,14 @@ namespace Com.Augment.ARWorld
         public override void OnJoinedRoom()
         {
             Debug.Log("OnJoinedRoom() was called. Client is now in a room");
+
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            {
+                Debug.Log("Loading 'Room for 1'");
+
+                PhotonNetwork.LoadLevel("Room for 1");
+            }
+
         }
 
 
@@ -112,14 +136,14 @@ namespace Com.Augment.ARWorld
 
             if (PhotonNetwork.IsConnected)
             {
-                // #Critical, joins random room, if it fails, OnJoinRandomFailed() will return, and we'll create a room
+                // Joins random room, if it fails, OnJoinRandomFailed() will return, and we'll create a room
                 PhotonNetwork.JoinRandomRoom();
 
             }
             else
             {
-                // #Critical, connect to photon
-                PhotonNetwork.ConnectUsingSettings();
+                // Connect to photon
+                isConnecting = PhotonNetwork.ConnectUsingSettings();
                 PhotonNetwork.GameVersion = gameVersion;
             }
 
@@ -127,6 +151,7 @@ namespace Com.Augment.ARWorld
         }
 
         #endregion
+
 
     }
 
